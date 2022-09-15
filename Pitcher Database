@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Sep 12 21:21:20 2022
+
+@author: bryan
+"""
+import pandas as pd
+import statistics
+import os
+
+#Enter CSV file location:
+Draft_Data = pd.read_csv('/Users/Bryan/Desktop/Draft_Project/Draft_register.csv') 
+Pitchers_Data = pd.read_csv('/Users/Bryan/Desktop/Draft_Project/MiLB_pitching_history.csv')
+Batters_Data = pd.read_csv('/Users/Bryan/Desktop/Draft_Project/MiLB_batting_history.csv')
+
+
+NewColumns = ['year','phase', 'draftRound', 'overall', 'signed', 'Teamname', 'draftPosit', 'highLevel', 'mlbYears', 'playYears', 'Source', 'school', 'HT', 'WT', 'draftRegionID', 'retroid', 'playerClass', 'schoolDivision']
+
+    
+Pitchers = Pitchers_Data.loc[Pitchers_Data["mlbid"] > 0]
+Draft = Draft_Data.loc[Draft_Data['mlbid'] > 0]
+Draft = Draft.loc[Draft['signed'] == 'Y']
+Draft = Draft.drop(2671)
+Draft = Draft.drop(6013)
+Draft = Draft.drop(6225)
+Draft = Draft.drop(10722)
+Draft = Draft.drop(19533)
+Draft = Draft.drop(20404)
+Draft = Draft.drop(20515)
+Draft = Draft.drop(21821)
+Draft = Draft.drop(24255)
+Draft = Draft.drop(25493)
+Draft = Draft.drop(36138)
+Draft = Draft.drop(38637)
+Draft = Draft.drop(39523)
+Draft = Draft.drop(43017)
+Draft = Draft.drop(46634)
+Draft = Draft.drop(56113)
+Draft = Draft.drop(53871)
+Draft = Draft.drop(72237)
+
+
+DM = Draft['draftPosit'].str.contains('P' or 'p')
+
+for i, value in DM.items():
+    DMA = value
+    #print(DMA)
+    
+    #print(i)
+    if DMA == False:
+        #print(DMA)
+        Draft = Draft.drop(i)
+        
+print(Draft)
+for Col in NewColumns:
+    Pitchers[Col] = 0
+
+
+for index, row in Pitchers.iterrows():
+    ID = row['mlbid']
+    Player = Draft.loc[Draft['mlbid'] == ID]
+    
+    if Player.empty:
+        pass
+    else:
+        for Details in NewColumns:
+            #print(Player[Details].item())
+            Info = Player[Details].item()
+            Pitchers[Details][index] = Info
+
+print(Pitchers)
+Pitchers.to_csv('/Users/Bryan/Desktop/Draft_Project/PitcherDraftData.csv')
